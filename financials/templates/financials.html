@@ -5,170 +5,295 @@
     Financials for {{ symbol }}
 {% endblock %}
 
+{% block head %}
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+    }
+
+    th, td {
+        padding: 6px 10px;  /* Smaller padding for compact layout */
+        text-align: center;   /* Center-align the text */
+        border: 1px solid black;  /* Black borders */
+        font-size: 12px;  /* Smaller font size */
+        word-wrap: break-word;  /* Break long words in cells */
+    }
+
+    th {
+        background-color: #f2f2f2;  /* Light gray background for table headers */
+        font-weight: bold;  /* Bold headers */
+    }
+
+    tr:nth-child(even) {
+        background-color: #f9f9f9;  /* Zebra-striping for rows */
+    }
+
+    tr:hover {
+        background-color: #f1f1f1;  /* Highlight row on hover */
+    }
+
+    /* Fixed column width */
+    th, td {
+        width: 120px;  /* Set fixed width for columns */
+    }
+
+    /* Layout for displaying tables side by side with gap */
+    .tables-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;  /* Adds a gap between tables */
+    }
+
+    .table-wrapper {
+        flex: 1;
+        min-width: 300px;  /* Ensure that the tables are not too small */
+        overflow-x: auto;  /* Allow horizontal scrolling if content overflows */
+    }
+</style>
+{% endblock %}
+
 {% block body %}
-<!-- Render JSON safely -->
-{{ roic_list|json_script:"roic-data" }}
-{{ pe_ratios|json_script:"pe-data" }}
+<!DOCTYPE html>
 
-<div class="container" style="max-width: 900px; margin: auto; padding: 20px;">
-  <h1>Financials for {{ symbol }}</h1>
+<body>
 
-  <div>
-    <h2>Key Metrics</h2>
-    <ul class="list-group">
-        <li class="list-group-item">
-          Revenue Growth:
-          <span class="{% if revenue_growth > 0 %}text-success{% else %}text-danger{% endif %}">
-            {{ revenue_growth }}%
-          </span>
-        </li>
-        <li class="list-group-item">
-          Earnings Growth:
-          <span class="{% if earnings_growth > 0 %}text-success{% else %}text-danger{% endif %}">
-            {{ earnings_growth }}%
-          </span>
-        </li>
-        <li class="list-group-item">
-          Shares Change:
-          <span class="{% if shares_change > 0 %}text-danger{% else %}text-success{% endif %}">
-            {{ shares_change }}%
-          </span>
-        </li>
-        <li class="list-group-item">
-          Free Cashflow Growth:
-          <span class="{% if free_cashflow_growth > 0 %}text-success{% else %}text-danger{% endif %}">
-            {{ free_cashflow_growth }}%
-          </span>
-        </li>
-    </ul>
-  </div>
+    <h1>Financials for {{ symbol }}</h1>
 
-  <div style="margin-top: 40px;">
-    <h2>Charts</h2>
+    <div class="tables-container">
+        <!-- Income Statement Table -->
+        <div class="table-wrapper">
+            <h2>Income Statement</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        {% for report in income_reports %}
+                            <th>{{ report.fiscal_date_ending }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Total Revenue</td>
+                        {% for report in income_reports %}
+                            <td>{{ report.total_revenue }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Cost of Revenue</td>
+                        {% for report in income_reports %}
+                            <td>{{ report.cost_of_revenue }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Gross Profit</td>
+                        {% for report in income_reports %}
+                            <td>{{ report.gross_profit }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Net Income</td>
+                        {% for report in income_reports %}
+                            <td>{{ report.net_income }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Basic Average Shares</td>
+                        {% for report in income_reports %}
+                            <td>{{ report.basic_average_shares }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Basic EPS</td>
+                        {% for report in income_reports %}
+                            <td>{{ report.basic_eps }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Operating Expense</td>
+                        {% for report in income_reports %}
+                            <td>{{ report.operating_expense }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>EBITDA</td>
+                        {% for report in income_reports %}
+                            <td>{{ report.ebitda }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>EBIT</td>
+                        {% for report in income_reports %}
+                            <td>{{ report.ebit }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Operating Income</td>
+                        {% for report in income_reports %}
+                            <td>{{ report.operating_income }}</td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-    <canvas id="roicChart" width="400" height="200"></canvas>
-    <canvas id="peChart" width="400" height="200" style="margin-top:30px;"></canvas>
-  </div>
-</div>
+        <!-- Balance Sheet Table -->
+        <div class="table-wrapper">
+            <h2>Balance Sheet</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        {% for report in balance_reports %}
+                            <th>{{ report.fiscal_date_ending }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Total Assets</td>
+                        {% for report in balance_reports %}
+                            <td>{{ report.total_assets }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Total Liabilities (Net Minority Interest)</td>
+                        {% for report in balance_reports %}
+                            <td>{{ report.total_liabilities_net_minority_interest }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Total Equity (Gross Minority Interest)</td>
+                        {% for report in balance_reports %}
+                            <td>{{ report.total_equity_gross_minority_interest }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Net Tangible Assets</td>
+                        {% for report in balance_reports %}
+                            <td>{{ report.net_tangible_assets }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Common Stock Equity</td>
+                        {% for report in balance_reports %}
+                            <td>{{ report.common_stock_equity }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Long Term Debt</td>
+                        {% for report in balance_reports %}
+                            <td>{{ report.long_term_debt }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Working Capital</td>
+                        {% for report in balance_reports %}
+                            <td>{{ report.working_capital }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Total Capitalization</td>
+                        {% for report in balance_reports %}
+                            <td>{{ report.total_capitalization }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Cash and Cash Equivalents</td>
+                        {% for report in balance_reports %}
+                            <td>{{ report.cash_and_cash_equivalents }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Retained Earnings</td>
+                        {% for report in balance_reports %}
+                            <td>{{ report.retained_earnings }}</td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-  const roicData = JSON.parse(document.getElementById('roic-data').textContent);
-  const peData = JSON.parse(document.getElementById('pe-data').textContent);
-
-  new Chart(document.getElementById('roicChart'), {
-    type: 'line',
-    data: {
-      labels: ['Year -4', 'Year -3', 'Year -2', 'Year -1', 'Latest'],
-      datasets: [{
-        label: 'ROIC (%)',
-        data: roicData,
-        borderColor: 'blue',
-        backgroundColor: 'lightblue',
-        fill: false,
-        tension: 0.3
-      }]
-    },
-  });
-
-  new Chart(document.getElementById('peChart'), {
-    type: 'bar',
-    data: {
-      labels: ['Year -4', 'Year -3', 'Year -2', 'Year -1', 'Latest'],
-      datasets: [{
-        label: 'P/E Ratio',
-        data: peData,
-        backgroundColor: peData.map(val => val > 0 ? 'green' : 'red')
-      }]
-    },
-  });
-</script>
-
-<!-- Financial Statements -->
-<div class="container py-5">
-  <h1 class="mb-5 text-center">Financial Statements for {{ symbol }}</h1>
-
-  <!-- Income Statement -->
-  <div class="mb-5">
-    <h2>Income Statement</h2>
-    <div class="table-responsive">
-      <table class="table table-striped table-bordered table-hover">
-        <thead class="table-dark">
-          <tr>
-            {% if income_reports %}
-              {% for key in income_reports.0.keys %}
-                <th>{{ key|title }}</th>
-              {% endfor %}
-            {% endif %}
-          </tr>
-        </thead>
-        <tbody>
-          {% for report in income_reports %}
-            <tr>
-              {% for value in report.values %}
-                <td>{{ value }}</td>
-              {% endfor %}
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+        <!-- Cash Flow Table -->
+        <div class="table-wrapper">
+            <h2>Cash Flow Statement</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        {% for report in cashflow_reports %}
+                            <th>{{ report.fiscal_date_ending }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Free Cash Flow</td>
+                        {% for report in cashflow_reports %}
+                            <td>{{ report.free_cash_flow }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Repayment of Debt</td>
+                        {% for report in cashflow_reports %}
+                            <td>{{ report.repayment_of_debt }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Issuance of Debt</td>
+                        {% for report in cashflow_reports %}
+                            <td>{{ report.issuance_of_debt }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Issuance of Capital Stock</td>
+                        {% for report in cashflow_reports %}
+                            <td>{{ report.issuance_of_capital_stock }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Capital Expenditure</td>
+                        {% for report in cashflow_reports %}
+                            <td>{{ report.capital_expenditure }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Interest Paid (Supplemental Data)</td>
+                        {% for report in cashflow_reports %}
+                            <td>{{ report.interest_paid_supplemental_data }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Income Tax Paid (Supplemental Data)</td>
+                        {% for report in cashflow_reports %}
+                            <td>{{ report.income_tax_paid_supplemental_data }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>End Cash Position</td>
+                        {% for report in cashflow_reports %}
+                            <td>{{ report.end_cash_position }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Beginning Cash Position</td>
+                        {% for report in cashflow_reports %}
+                            <td>{{ report.beginning_cash_position }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Effect of Exchange Rate Changes</td>
+                        {% for report in cashflow_reports %}
+                            <td>{{ report.effect_of_exchange_rate_changes }}</td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-  </div>
 
-  <!-- Balance Sheet -->
-  <div class="mb-5">
-    <h2>Balance Sheet</h2>
-    <div class="table-responsive">
-      <table class="table table-striped table-bordered table-hover">
-        <thead class="table-dark">
-          <tr>
-            {% if balance_reports %}
-              {% for key in balance_reports.0.keys %}
-                <th>{{ key|title }}</th>
-              {% endfor %}
-            {% endif %}
-          </tr>
-        </thead>
-        <tbody>
-          {% for report in balance_reports %}
-            <tr>
-              {% for value in report.values %}
-                <td>{{ value }}</td>
-              {% endfor %}
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Cash Flow Statement -->
-  <div class="mb-5">
-    <h2>Cash Flow Statement</h2>
-    <div class="table-responsive">
-      <table class="table table-striped table-bordered table-hover">
-        <thead class="table-dark">
-          <tr>
-            {% if cashflow_reports %}
-              {% for key in cashflow_reports.0.keys %}
-                <th>{{ key|title }}</th>
-              {% endfor %}
-            {% endif %}
-          </tr>
-        </thead>
-        <tbody>
-          {% for report in cashflow_reports %}
-            <tr>
-              {% for value in report.values %}
-                <td>{{ value }}</td>
-              {% endfor %}
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
+</body>
 
 {% endblock %}
