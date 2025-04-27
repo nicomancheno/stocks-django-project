@@ -1,0 +1,14 @@
+{% extends 'layout.html'%}
+{% block body %}
+
+<div class="container py-5 text-center">
+    <h1 class="mb-4">Welcome to Stock Financials!</h1>
+    <p class="lead mb-4">Enter a stock symbol (like AAPL, TSLA, MSFT) to view its financial statements.</p>
+
+    <form method="get" action="{% url 'financials' %}" class="d-flex justify-content-center">
+        <input type="text" name="symbol" placeholder="Enter stock symbol..." class="form-control w-25 me-2" required>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+</div>
+
+{% endblock %}
