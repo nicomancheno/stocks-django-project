@@ -1,62 +1,18 @@
 {% extends 'layout.html' %}
 {% load static %}
+{% load custom_filters %}
 
 {% block title %}
     Financials for {{ symbol }}
 {% endblock %}
 
 {% block head %}
-<style>
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 20px 0;
-    }
+<link rel="stylesheet" href="{% static 'css/financials.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js library -->
 
-    th, td {
-        padding: 6px 10px;  /* Smaller padding for compact layout */
-        text-align: center;   /* Center-align the text */
-        border: 1px solid black;  /* Black borders */
-        font-size: 12px;  /* Smaller font size */
-        word-wrap: break-word;  /* Break long words in cells */
-    }
-
-    th {
-        background-color: #f2f2f2;  /* Light gray background for table headers */
-        font-weight: bold;  /* Bold headers */
-    }
-
-    tr:nth-child(even) {
-        background-color: #f9f9f9;  /* Zebra-striping for rows */
-    }
-
-    tr:hover {
-        background-color: #f1f1f1;  /* Highlight row on hover */
-    }
-
-    /* Fixed column width */
-    th, td {
-        width: 120px;  /* Set fixed width for columns */
-    }
-
-    /* Layout for displaying tables side by side with gap */
-    .tables-container {
-        display: flex;
-        justify-content: space-between;
-        gap: 20px;  /* Adds a gap between tables */
-    }
-
-    .table-wrapper {
-        flex: 1;
-        min-width: 300px;  /* Ensure that the tables are not too small */
-        overflow-x: auto;  /* Allow horizontal scrolling if content overflows */
-    }
-</style>
 {% endblock %}
 
 {% block body %}
-<!DOCTYPE html>
-
 <body>
 
     <h1>Financials for {{ symbol }}</h1>
@@ -65,6 +21,7 @@
         <!-- Income Statement Table -->
         <div class="table-wrapper">
             <h2>Income Statement</h2>
+            <p class="note">Numbers in millions</p>
             <table>
                 <thead>
                     <tr>
@@ -75,66 +32,16 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Total Revenue</td>
-                        {% for report in income_reports %}
-                            <td>{{ report.total_revenue }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>Cost of Revenue</td>
-                        {% for report in income_reports %}
-                            <td>{{ report.cost_of_revenue }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>Gross Profit</td>
-                        {% for report in income_reports %}
-                            <td>{{ report.gross_profit }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>Net Income</td>
-                        {% for report in income_reports %}
-                            <td>{{ report.net_income }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>Basic Average Shares</td>
-                        {% for report in income_reports %}
-                            <td>{{ report.basic_average_shares }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>Basic EPS</td>
-                        {% for report in income_reports %}
-                            <td>{{ report.basic_eps }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>Operating Expense</td>
-                        {% for report in income_reports %}
-                            <td>{{ report.operating_expense }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>EBITDA</td>
-                        {% for report in income_reports %}
-                            <td>{{ report.ebitda }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>EBIT</td>
-                        {% for report in income_reports %}
-                            <td>{{ report.ebit }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>Operating Income</td>
-                        {% for report in income_reports %}
-                            <td>{{ report.operating_income }}</td>
-                        {% endfor %}
-                    </tr>
+                    <tr><td>Total Revenue</td>{% for report in income_reports %}<td>{{ report.total_revenue|millions }}</td>{% endfor %}</tr>
+                    <tr><td>Cost of Revenue</td>{% for report in income_reports %}<td>{{ report.cost_of_revenue|millions }}</td>{% endfor %}</tr>
+                    <tr><td>Gross Profit</td>{% for report in income_reports %}<td>{{ report.gross_profit|millions }}</td>{% endfor %}</tr>
+                    <tr><td>Net Income</td>{% for report in income_reports %}<td>{{ report.net_income|millions }}</td>{% endfor %}</tr>
+                    <tr><td>Basic Average Shares</td>{% for report in income_reports %}<td>{{ report.basic_average_shares|millions }}</td>{% endfor %}</tr>
+                    <tr><td>Basic EPS</td>{% for report in income_reports %}<td>{{ report.basic_eps }}</td>{% endfor %}</tr>
+                    <tr><td>Operating Expense</td>{% for report in income_reports %}<td>{{ report.operating_expense|millions }}</td>{% endfor %}</tr>
+                    <tr><td>EBITDA</td>{% for report in income_reports %}<td>{{ report.ebitda|millions }}</td>{% endfor %}</tr>
+                    <tr><td>EBIT</td>{% for report in income_reports %}<td>{{ report.ebit|millions }}</td>{% endfor %}</tr>
+                    <tr><td>Operating Income</td>{% for report in income_reports %}<td>{{ report.operating_income|millions }}</td>{% endfor %}</tr>
                 </tbody>
             </table>
         </div>
@@ -142,6 +49,7 @@
         <!-- Balance Sheet Table -->
         <div class="table-wrapper">
             <h2>Balance Sheet</h2>
+            <p class="note">Numbers in millions</p>
             <table>
                 <thead>
                     <tr>
@@ -152,73 +60,24 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Total Assets</td>
-                        {% for report in balance_reports %}
-                            <td>{{ report.total_assets }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>Total Liabilities (Net Minority Interest)</td>
-                        {% for report in balance_reports %}
-                            <td>{{ report.total_liabilities_net_minority_interest }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>Total Equity (Gross Minority Interest)</td>
-                        {% for report in balance_reports %}
-                            <td>{{ report.total_equity_gross_minority_interest }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>Net Tangible Assets</td>
-                        {% for report in balance_reports %}
-                            <td>{{ report.net_tangible_assets }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>Common Stock Equity</td>
-                        {% for report in balance_reports %}
-                            <td>{{ report.common_stock_equity }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>Long Term Debt</td>
-                        {% for report in balance_reports %}
-                            <td>{{ report.long_term_debt }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>Working Capital</td>
-                        {% for report in balance_reports %}
-                            <td>{{ report.working_capital }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>Total Capitalization</td>
-                        {% for report in balance_reports %}
-                            <td>{{ report.total_capitalization }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>Cash and Cash Equivalents</td>
-                        {% for report in balance_reports %}
-                            <td>{{ report.cash_and_cash_equivalents }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>Retained Earnings</td>
-                        {% for report in balance_reports %}
-                            <td>{{ report.retained_earnings }}</td>
-                        {% endfor %}
-                    </tr>
+                    <tr><td>Total Assets</td>{% for report in balance_reports %}<td>{{ report.total_assets|millions }}</td>{% endfor %}</tr>
+                    <tr><td>Total Liabilities</td>{% for report in balance_reports %}<td>{{ report.total_liabilities_net_minority_interest|millions }}</td>{% endfor %}</tr>
+                    <tr><td>Total Equity</td>{% for report in balance_reports %}<td>{{ report.total_equity_gross_minority_interest|millions }}</td>{% endfor %}</tr>
+                    <tr><td>Net Tangible Assets</td>{% for report in balance_reports %}<td>{{ report.net_tangible_assets|millions }}</td>{% endfor %}</tr>
+                    <tr><td>Common Stock Equity</td>{% for report in balance_reports %}<td>{{ report.common_stock_equity|millions }}</td>{% endfor %}</tr>
+                    <tr><td>Long Term Debt</td>{% for report in balance_reports %}<td>{{ report.long_term_debt|millions }}</td>{% endfor %}</tr>
+                    <tr><td>Working Capital</td>{% for report in balance_reports %}<td>{{ report.working_capital|millions }}</td>{% endfor %}</tr>
+                    <tr><td>Total Capitalization</td>{% for report in balance_reports %}<td>{{ report.total_capitalization|millions }}</td>{% endfor %}</tr>
+                    <tr><td>Cash and Cash Equivalents</td>{% for report in balance_reports %}<td>{{ report.cash_and_cash_equivalents|millions }}</td>{% endfor %}</tr>
+                    <tr><td>Retained Earnings</td>{% for report in balance_reports %}<td>{{ report.retained_earnings|millions }}</td>{% endfor %}</tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- Cash Flow Table -->
+        <!-- Cash Flow Statement Table -->
         <div class="table-wrapper">
             <h2>Cash Flow Statement</h2>
+            <p class="note">Numbers in millions</p>
             <table>
                 <thead>
                     <tr>
@@ -229,71 +88,20 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Free Cash Flow</td>
-                        {% for report in cashflow_reports %}
-                            <td>{{ report.free_cash_flow }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>Repayment of Debt</td>
-                        {% for report in cashflow_reports %}
-                            <td>{{ report.repayment_of_debt }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>Issuance of Debt</td>
-                        {% for report in cashflow_reports %}
-                            <td>{{ report.issuance_of_debt }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>Issuance of Capital Stock</td>
-                        {% for report in cashflow_reports %}
-                            <td>{{ report.issuance_of_capital_stock }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>Capital Expenditure</td>
-                        {% for report in cashflow_reports %}
-                            <td>{{ report.capital_expenditure }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>Interest Paid (Supplemental Data)</td>
-                        {% for report in cashflow_reports %}
-                            <td>{{ report.interest_paid_supplemental_data }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>Income Tax Paid (Supplemental Data)</td>
-                        {% for report in cashflow_reports %}
-                            <td>{{ report.income_tax_paid_supplemental_data }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>End Cash Position</td>
-                        {% for report in cashflow_reports %}
-                            <td>{{ report.end_cash_position }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>Beginning Cash Position</td>
-                        {% for report in cashflow_reports %}
-                            <td>{{ report.beginning_cash_position }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>Effect of Exchange Rate Changes</td>
-                        {% for report in cashflow_reports %}
-                            <td>{{ report.effect_of_exchange_rate_changes }}</td>
-                        {% endfor %}
-                    </tr>
+                    <tr><td>Free Cash Flow</td>{% for report in cashflow_reports %}<td>{{ report.free_cash_flow|millions }}</td>{% endfor %}</tr>
+                    <tr><td>Repayment of Debt</td>{% for report in cashflow_reports %}<td>{{ report.repayment_of_debt|millions }}</td>{% endfor %}</tr>
+                    <tr><td>Issuance of Debt</td>{% for report in cashflow_reports %}<td>{{ report.issuance_of_debt|millions }}</td>{% endfor %}</tr>
+                    <tr><td>Issuance of Capital Stock</td>{% for report in cashflow_reports %}<td>{{ report.issuance_of_capital_stock|millions }}</td>{% endfor %}</tr>
+                    <tr><td>Capital Expenditure</td>{% for report in cashflow_reports %}<td>{{ report.capital_expenditure|millions }}</td>{% endfor %}</tr>
+                    <tr><td>Interest Paid</td>{% for report in cashflow_reports %}<td>{{ report.interest_paid_supplemental_data|millions }}</td>{% endfor %}</tr>
+                    <tr><td>Income Tax Paid</td>{% for report in cashflow_reports %}<td>{{ report.income_tax_paid_supplemental_data|millions }}</td>{% endfor %}</tr>
+                    <tr><td>End Cash Position</td>{% for report in cashflow_reports %}<td>{{ report.end_cash_position|millions }}</td>{% endfor %}</tr>
+                    <tr><td>Beginning Cash Position</td>{% for report in cashflow_reports %}<td>{{ report.beginning_cash_position|millions }}</td>{% endfor %}</tr>
+                    <tr><td>Effect of Exchange Rate Changes</td>{% for report in cashflow_reports %}<td>{{ report.effect_of_exchange_rate_changes|millions }}</td>{% endfor %}</tr>
                 </tbody>
             </table>
         </div>
     </div>
 
 </body>
-
 {% endblock %}
