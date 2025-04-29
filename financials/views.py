@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 import requests
 from .models import Company, IncomeStatement, BalanceSheet, CashFlowStatement
-from datetime import datetime
+from datetime import date
 from bs4 import BeautifulSoup
 import pandas as pd
 import yfinance as yf
+from django.core import serializers  # if not already imported
+import json
 
 # Make sure to use a valid API key for your application.
 API_KEY = '9HYXP1EZDX7HU3IM'
@@ -12,11 +14,6 @@ API_KEY = '9HYXP1EZDX7HU3IM'
 def home(request):
     return render(request, 'home.html')
 
-# views.py
-import yfinance as yf
-from django.shortcuts import render
-from .models import Company, IncomeStatement, BalanceSheet, CashFlowStatement
-from datetime import datetime
 
 def fetch_or_update_financials(symbol):
     # Fetch the company object or create a new one
@@ -96,8 +93,6 @@ def fetch_or_update_financials(symbol):
     return company
 
 
-from datetime import date
-
 def financials_view(request):
     symbol = request.GET.get('symbol', 'AAPL')  # Default to 'AAPL' if no symbol is provided
 
@@ -120,12 +115,31 @@ def financials_view(request):
         company=company, fiscal_date_ending__gte=start_date
     ).order_by('-fiscal_date_ending')
 
+    # Format date fields and convert QuerySet to a list of dictionaries
+    def format_report_dates(report):
+        # Convert date fields to string in YYYY-MM-DD format
+        report['fiscal_date_ending'] = report['fiscal_date_ending'].strftime('%Y-%m-%d')
+        return report
+
+    income_reports_list = list(income_reports.values())
+    income_reports_list = [format_report_dates(report) for report in income_reports_list]
+
+    cashflow_reports_list = list(cashflow_reports.values())
+    cashflow_reports_list = [format_report_dates(report) for report in cashflow_reports_list]
+
+    # Serialize the lists to JSON
+    income_reports_json = json.dumps(income_reports_list)
+    cashflow_reports_json = json.dumps(cashflow_reports_list)
+
     return render(request, 'financials.html', {
-        'symbol': symbol,  # <- pass the string symbol, not company object
+        'symbol': symbol,
         'income_reports': income_reports,
         'balance_reports': balance_reports,
         'cashflow_reports': cashflow_reports,
+        'income_reports_json': income_reports_json,
+        'cashflow_reports_json': cashflow_reports_json,
     })
+
 
 
 def calculate_growth(new, old):

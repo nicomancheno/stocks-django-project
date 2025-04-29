@@ -77,4 +77,37 @@ th:first-child, td:first-child {
 canvas {
     display: block;
     margin: 0 auto;
+    width: 100%;
+    height: 200px;
 }
+
+.charts-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin: 40px 0;
+    gap: 20px;
+}
+
+.chart-wrapper {
+    flex: 1;
+    min-width: 250px;
+    max-width: 300px;
+    text-align: center;
+}
+
+.growth {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+}
+
+.growth-text {
+    font-weight: bold;
+    text-align: center;
+    font-size: 1rem;
+    margin-top: 8px;
+}
+.growth-positive { color: green; }
+.growth-negative { color: red; }

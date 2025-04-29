@@ -7,15 +7,44 @@
 {% endblock %}
 
 {% block head %}
-<link rel="stylesheet" href="{% static 'css/financials.css' %}">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js library -->
-
+<link rel="stylesheet" href="{% static 'financials/financials.css' %}">
+<script src="{% static 'financials/financials.js' %}"></script>
 {% endblock %}
 
 {% block body %}
 <body>
 
     <h1>Financials for {{ symbol }}</h1>
+    <div class="charts-container" style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 40px; justify-content: center;">
+        <div style="width: 300px;">
+            <canvas id="totalRevenueChart"></canvas>
+        </div>
+        <div id="totalRevenueGrowth" class="growth-text"></div>
+        <div style="width: 300px;">
+            <canvas id="netIncomeChart"></canvas>
+        </div>
+        <div id="netIncomeGrowth" class="growth-text"></div>
+        <div style="width: 300px;">
+            <canvas id="freeCashFlowChart"></canvas>
+        </div>
+        <div id="freeCashFlowGrowth" class="growth-text"></div>
+        <div style="width: 300px;">
+            <canvas id="basicSharesChart"></canvas>
+        </div>
+        <div id="basicSharesGrowth" class="growth-text"></div>
+    </div>
+    
+    <!-- Include the chart rendering script -->
+    <script type="application/json" id="incomeReportsData">{{ income_reports_json|safe }}</script>
+    <script type="application/json" id="cashflowReportsData">{{ cashflow_reports_json|safe }}</script>
+    <script>
+        // Log the data passed to make sure it's correct
+        var incomeReports = JSON.parse(document.getElementById('incomeReportsData').textContent);
+        console.log('Income Reports:', incomeReports);  // Check if the data is properly loaded
+        
+        var cashflowReports = JSON.parse(document.getElementById('cashflowReportsData').textContent);
+        console.log('Cashflow Reports:', cashflowReports);  // Check if the data is properly loaded
+    </script>
 
     <div class="tables-container">
         <!-- Income Statement Table -->
@@ -27,7 +56,7 @@
                     <tr>
                         <th>Field</th>
                         {% for report in income_reports %}
-                            <th>{{ report.fiscal_date_ending }}</th>
+                            <th>{{ report.fiscal_date_ending|date:"Y"  }}</th>
                         {% endfor %}
                     </tr>
                 </thead>
@@ -55,7 +84,7 @@
                     <tr>
                         <th>Field</th>
                         {% for report in balance_reports %}
-                            <th>{{ report.fiscal_date_ending }}</th>
+                            <th>{{ report.fiscal_date_ending|date:"Y"   }}</th>
                         {% endfor %}
                     </tr>
                 </thead>
@@ -83,7 +112,7 @@
                     <tr>
                         <th>Field</th>
                         {% for report in cashflow_reports %}
-                            <th>{{ report.fiscal_date_ending }}</th>
+                            <th>{{ report.fiscal_date_ending|date:"Y"  }}</th>
                         {% endfor %}
                     </tr>
                 </thead>
@@ -102,6 +131,7 @@
             </table>
         </div>
     </div>
+    
 
 </body>
 {% endblock %}
